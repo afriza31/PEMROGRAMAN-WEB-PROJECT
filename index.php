@@ -53,6 +53,73 @@ if (!isset($_SESSION['uname'])) {
   <!-- alpineJs -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="src/app.js"></script>
+  
+  <!-- Custom Style for Sidebar -->
+  <style>
+
+    .navbar-extra a#settings-button {
+       margin-left: 0.8rem; 
+    }
+
+
+    .settings-sidebar {
+      position: fixed;
+      top: 40px;
+      right: -300px;
+      width: 300px;
+      height: 100%;
+      background: #333;
+      color: white;
+      transition: right 0.3s;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .settings-sidebar.active {
+      right: 0;
+    }
+
+    .settings-sidebar .close-btn {
+      display: block;
+      text-align: right;
+      margin-top: 3rem;
+      
+    }
+
+    .settings-sidebar .close-btn i {
+      cursor: pointer;
+      
+    }
+
+    .settings-sidebar ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .settings-sidebar ul li {
+      margin: 20px 0;
+    }
+
+    .settings-sidebar ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 1.2em;
+    }
+
+    .settings-sidebar ul li a:hover {
+      color: #d3a27f;
+    }
+
+    .settings-sidebar button {
+      background: none; border: none; color: white; font-size: 1.2em; cursor:pointer;
+    }
+
+    .settings-sidebar button:hover{
+      color: #d3a27f;
+    }
+
+
+  </style>
 </head>
 
 <body>
@@ -75,20 +142,9 @@ if (!isset($_SESSION['uname'])) {
         <i data-feather="shopping-cart"></i>
         <span class="quantity-badge" x-show="$store.cart.quantity" x-text="$store.cart.quantity"></span>
       </a>
+      <a href="#" id="settings-button"><i data-feather="settings"></i></a>
       <a href="#" id="hamburger-menu"><i data-feather="menu"></i></a>
     </div>
-
-            <!-- Tambahkan tombol logout -->
-            <form method="post" action="logout.php" style="display: inline;">
-                <button type="submit" style="background: none; border: none; color: white; font-size: 1em; cursor:pointer;" id="logout">
-                    <i data-feather="log-out"></i>
-                    Logout
-                </button>
-            </form>
-
-            
-              <a href="changepassword.php" style="color: white">Ganti Password</a>
-            
 
     <!-- Search Form start -->
     <div class="search-form">
@@ -147,6 +203,22 @@ if (!isset($_SESSION['uname'])) {
 
   </nav>
   <!-- Navbar end -->
+
+  <!-- Settings Sidebar start -->
+  <div class="settings-sidebar" id="settings-sidebar">
+    <div class="close-btn"><i data-feather="x"></i></div>
+    <ul>
+      <li><a href="changepassword.php">Ganti Password</a></li>
+      <li>
+        <form method="post" action="logout.php">
+          <button type="submit">
+            Logout
+          </button>
+        </form>
+      </li>
+    </ul>
+  </div>
+  <!-- Settings Sidebar end -->
 
   <!-- Hero Section start -->
   <section class="hero" id="home">
@@ -386,6 +458,24 @@ if (!isset($_SESSION['uname'])) {
   <!-- Feather Icons -->
   <script>
     feather.replace()
+
+    // Sidebar control
+    document.getElementById('settings-button').addEventListener('click', function() {
+        document.getElementById('settings-sidebar').classList.toggle('active');
+    });
+
+    document.querySelector('.close-btn').addEventListener('click', function() {
+        document.getElementById('settings-sidebar').classList.remove('active');
+    });
+    document.addEventListener('click', function(event) {
+        var isClickInside = document.getElementById('settings-sidebar').contains(event.target) || 
+                            document.getElementById('settings-button').contains(event.target);
+
+        if (!isClickInside) {
+            document.getElementById('settings-sidebar').classList.remove('active');
+        }
+    });
+
   </script>
 
   <!-- My Javascript -->
