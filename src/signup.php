@@ -1,9 +1,8 @@
 <?php
 session_start();
 
-$sqluser = "root";
-$sqlpassword = "";
-$sqldatabase = "login";
+// Include file konfigurasi
+include 'confiq.php';
 
 $post = $_SERVER['REQUEST_METHOD']=='POST';
 
@@ -18,19 +17,7 @@ if ($post) {
     ) {
         $empty_fields = true;
     } else {
-        $unmatch = preg_match('/^[A-Za-z][A-Za-z0-9_]{3,}$/', $_POST['uname']);
-        $fnmatch = preg_match('/^[A-Za-z]+$/', $_POST['fname']);
-        $lnmatch = preg_match('/^[A-Za-z]+$/', $_POST['lname']);
-        $emmatch = preg_match('/^[A-Za-z_0-9]+@[A-Za-z]+.[A-Za-z]+$/', $_POST['email']);
-        $pmatch = preg_match('/.{5,}/', $_POST['pass']);
-        $peq = $_POST['pass'] == $_POST['repass'];
-        if ($unmatch && $fnmatch && $lnmatch && $emmatch && $pmatch && $peq) {
-            try {
-                $pdo = new PDO("mysql:host=localhost;dbname=" . $sqldatabase, $sqluser, $sqlpassword);
-                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            } catch (PDOException $e) {
-                exit($e->getMessage());
-            }
+       
             $st = $pdo->prepare('SELECT * FROM list WHERE user_name=?');
             $st->execute(array($_POST['uname']));
             $uname_err = $st->fetch() != null;
@@ -47,16 +34,17 @@ if ($post) {
                     $_POST['email'],
                     $hashed_password
                 ));
+                $_SESSION["login"] = true;
                 $_SESSION["uname"] = $_POST["uname"];
                 $_SESSION["fname"] = $_POST["fname"];
-                header("Location: login.php");
-                exit;
+                header("Location: index.php");
+                exit();
             }
-        }
+        
     }
 }
 ?>
-<!-- HTML form tetap seperti sebelumnya -->
+
 
 
 <!DOCTYPE HTML>
@@ -68,7 +56,7 @@ if ($post) {
         padding:0px;
         font-family: sans-serif;
         font-size:.9em;
-        background-image: url("img/mike-kenneally-TD4DBagg2wE-unsplash.jpg");
+        background-image: url("../img/mike-kenneally-TD4DBagg2wE-unsplash.jpg");
     }
     div {
         top:50%;
@@ -121,30 +109,35 @@ if ($post) {
         font-weight: bold;
     }
 </style>
+<script src="../js/validate.js"></script>
 </head> 
 <body>
 <div>
-<form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
+<form name="signupForm" method="post" action="<?php echo $_SERVER['PHP_SELF'];?>" onsubmit="return validateform()">
     <p>SignUp</p>
-    <?php
-    echo 'Username<br><input type="text" name="uname" value="'.$_POST['uname'].'" placeholder="Username"><br>';
-    if($post&&!$empty_fields&&!$unmatch) echo '<span>Username can contain alphabet letters, numbers and underscore(_), but must begin with a letter. It must be at least 4 character long.<br></span>';
-    if(!empty($uname_err)&&$uname_err) echo '<span>Username taken. Try another username.</span>';
-    echo '<br>Name<br><input type="text" name="fname" value="'.$_POST['fname'].'" placeholder="First Name"><br>';
-    echo '<input type="text" name="lname" value="'.$_POST['lname'].'" placeholder="Last Name"><br>';
-    if($post&&!$empty_fields&&!($lnmatch&&$fnmatch)) echo '<span>Name can only contain alphabet letters.<br></span>';
-    echo '<br>E-mail<br><input type="text" name="email" value="'.$_POST['email'].'" placeholder="email@example.com"><br>';
-    if(!empty($email_err)&&$email_err) echo '<span>Email already registered. Enter another email.</span>';
-    if($post&&!$empty_fields&&!$emmatch) echo '<span>Email must be of format example@site.domain<br></span>';
-    echo '<br>Password<br><input type="password" name="pass" placeholder="Password"><br>';
-    echo '<input type="password" name="repass" placeholder="Retype password">';
-    if($post&&!$empty_fields&&!$pmatch) echo '<span>Password must be at least 5 character long</span>';
-    if($post&&!$empty_fields&&$pmatch&&!$peq) echo '<span>Password don\'t match</span><br>';
-    if($post &&$empty_fields) echo "<br><span>Please fill all the fields completely.</span><br>";
-    ?>
+    Username<br>
+    <input type="text" name="uname" placeholder="Username"><br>
+    <span id="uname-error"></span><br>
+    
+    Name<br>
+    <input type="text" name="fname" placeholder="First Name"><br>
+    <span id="fname-error"></span><br>
+    <input type="text" name="lname" placeholder="Last Name"><br>
+    <span id="lname-error"></span><br>
+    
+    E-mail<br>
+    <input type="text" name="email" placeholder="email@example.com"><br>
+    <span id="email-error"></span><br>
+    
+    Password<br>
+    <input type="password" name="pass" placeholder="Password"><br>
+    <span id="pass-error"></span><br>
+    <input type="password" name="repass" placeholder="Retype password"><br>
+    <span id="repass-error"></span><br>
+    
     <br>
     <input type="submit" id="submit" value="SignUp"><br><br>
-    Already have a account? <a href="login.php">LogIn</a>.<br><br>
+    Already have an account? <a href="login.php">LogIn</a>.<br><br>
 </form>
 </div>
 </body>

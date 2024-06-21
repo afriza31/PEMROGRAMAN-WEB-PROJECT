@@ -1,31 +1,13 @@
 <?php
 session_start();
 
-$sqluser = "root";
-$sqlpassword = "";
-$sqldatabase = "login";
+// Include file konfigurasi
+include 'confiq.php';
 
-if (!isset($_SESSION['uname']) && isset($_COOKIE['uname']) && isset($_COOKIE['pass'])) {
-    try {
-        $pdo = new PDO("mysql:host=localhost;dbname=" . $sqldatabase, $sqluser, $sqlpassword);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    } catch (PDOException $e) {
-        exit($e->getMessage());
-    }
-    $st = $pdo->prepare('SELECT * FROM list WHERE user_name=?');
-    $st->execute(array($_COOKIE['uname']));
-    $r = $st->fetch();
-    if ($r != null && password_verify($_COOKIE['pass'], $r["password"])) {
-        $_SESSION["uname"] = $_COOKIE['uname'];
-        $_SESSION["fname"] = $r["first_name"];
-    }
-}
-
-if (!isset($_SESSION['uname'])) {
+if (!isset($_SESSION['login'])) {
     header("Location: login.php");
     exit();
 }
-
 ?>
 
 
@@ -48,11 +30,13 @@ if (!isset($_SESSION['uname'])) {
   <script src="https://unpkg.com/feather-icons"></script>
 
   <!-- My Style -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="../css/style.css">
 
   <!-- alpineJs -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script src="src/app.js"></script>
+  <!-- <script src="src/app.js"></script> -->
+  <script src="../js/app.js"></script>
+
   
   <!-- Custom Style for Sidebar -->
   <style>
@@ -157,7 +141,7 @@ if (!isset($_SESSION['uname'])) {
     <div class="shopping-cart">
       <template x-for="(item, index) in $store.cart.items" x-keys="index">
         <div class="cart-item">
-        <img :src="`img/products/${item.img}`" :alt="item.name">
+        <img :src="`../img/products/${item.img}`" :alt="item.name">
         <div class="item-detail">
           <h3 x-text="item.name"></h3>
           <div class="item-price">
@@ -237,7 +221,7 @@ if (!isset($_SESSION['uname'])) {
 
     <div class="row">
       <div class="about-img">
-        <img src="img/tentang-kami.jpg" alt="Tentang Kami">
+        <img src="../img/tentang-kami.jpg" alt="Tentang Kami">
       </div>
       <div class="content">
         <h3>Kenapa memilih kopi kami?</h3>
@@ -258,32 +242,32 @@ if (!isset($_SESSION['uname'])) {
 
     <div class="row">
       <div class="menu-card">
-        <img src="img/menu/1.jpg" alt="Espresso" class="menu-card-img">
+        <img src="../img/menu/1.jpg" alt="Espresso" class="menu-card-img">
         <h3 class="menu-card-title">- Espresso -</h3>
         <p class="menu-card-price">IDR 15K</p>
       </div>
       <div class="menu-card">
-        <img src="img/menu/1.jpg" alt="Espresso" class="menu-card-img">
+        <img src="../img/menu/1.jpg" alt="Espresso" class="menu-card-img">
         <h3 class="menu-card-title">- Capuccino -</h3>
         <p class="menu-card-price">IDR 25K</p>
       </div>
       <div class="menu-card">
-        <img src="img/menu/1.jpg" alt="Espresso" class="menu-card-img">
+        <img src="../img/menu/1.jpg" alt="Espresso" class="menu-card-img">
         <h3 class="menu-card-title">- Latte -</h3>
         <p class="menu-card-price">IDR 20K</p>
       </div>
       <div class="menu-card">
-        <img src="img/menu/1.jpg" alt="Espresso" class="menu-card-img">
+        <img src="../img/menu/1.jpg" alt="Espresso" class="menu-card-img">
         <h3 class="menu-card-title">- Espresso -</h3>
         <p class="menu-card-price">IDR 15K</p>
       </div>
       <div class="menu-card">
-        <img src="img/menu/1.jpg" alt="Espresso" class="menu-card-img">
+        <img src="../img/menu/1.jpg" alt="Espresso" class="menu-card-img">
         <h3 class="menu-card-title">- Espresso -</h3>
         <p class="menu-card-price">IDR 15K</p>
       </div>
       <div class="menu-card">
-        <img src="img/menu/1.jpg" alt="Espresso" class="menu-card-img">
+        <img src="../img/menu/1.jpg" alt="Espresso" class="menu-card-img">
         <h3 class="menu-card-title">- Espresso -</h3>
         <p class="menu-card-price">IDR 15K</p>
       </div>
@@ -302,17 +286,17 @@ if (!isset($_SESSION['uname'])) {
         <div class="product-icons">
         <a href="#" @click.prevent="$store.cart.add(item)">
                             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <use href="img/feather-sprite.svg#shopping-cart" />
+                                <use href="../img/feather-sprite.svg#shopping-cart" />
                             </svg>
                         </a>
                         <a href="#" class="item-detail-button">
                             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <use href="img/feather-sprite.svg#eye" />
+                                <use href="../img/feather-sprite.svg#eye" />
                             </svg>
                         </a>
         </div>
         <div class="product-image">
-          <img :src="`img/products/${item.img}`" :alt="item.name">
+          <img :src="`../img/products/${item.img}`" :alt="item.name">
         </div>
         <div class="product-content">
           <h3 x-text="item.name"></h3>
@@ -326,7 +310,7 @@ if (!isset($_SESSION['uname'])) {
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <use href="/img/feather-sprite.svg#star" />
+            <use href="../img/feather-sprite.svg#star" />
           </svg>
           <svg
             width="24"
@@ -337,7 +321,7 @@ if (!isset($_SESSION['uname'])) {
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <use href="/img/feather-sprite.svg#star" />
+            <use href="../img/feather-sprite.svg#star" />
           </svg>
           <svg
             width="24"
@@ -348,7 +332,7 @@ if (!isset($_SESSION['uname'])) {
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <use href="/img/feather-sprite.svg#star" />
+            <use href="../img/feather-sprite.svg#star" />
           </svg>
           <svg
             width="24"
@@ -359,7 +343,7 @@ if (!isset($_SESSION['uname'])) {
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <use href="/img/feather-sprite.svg#star" />
+            <use href="../img/feather-sprite.svg#star" />
           </svg>
           <svg
             width="24"
@@ -370,7 +354,7 @@ if (!isset($_SESSION['uname'])) {
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <use href="/img/feather-sprite.svg#star" />
+            <use href="../img/feather-sprite.svg#star" />
           </svg>
           </div>
           <div class="product-price"><span x-text="rupiah(item.price)"></span></div>
@@ -435,7 +419,7 @@ if (!isset($_SESSION['uname'])) {
     <div class="modal-container">
       <a href="#" class="close-icon"><i data-feather="x"></i></a>
       <div class="modal-content">
-        <img src="img/products/1.jpg" alt="Product 1">
+        <img src="../img/products/1.jpg" alt="Product 1">
         <div class="product-content">
           <h3>Product 1</h3>
           <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Provident, tenetur cupiditate facilis obcaecati
@@ -479,7 +463,7 @@ if (!isset($_SESSION['uname'])) {
   </script>
 
   <!-- My Javascript -->
-  <script src="js/script.js"></script>
+  <script src="../js/script.js"></script>
 </body>
 
 </html>

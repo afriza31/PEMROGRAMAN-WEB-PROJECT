@@ -1,24 +1,17 @@
 <?php
 session_start();
-if (!isset($_SESSION['uname'])) {
+if (!isset($_SESSION['login'])) {
     header("Location: login.php");
     exit();
 }
 
-$sqluser = "root";
-$sqlpassword = "";
-$sqldatabase = "login";
+// Include file konfigurasi
+include 'confiq.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($_POST['current_pass']) || empty($_POST['new_pass']) || empty($_POST['confirm_pass'])) {
         $empty_fields = true;
     } else {
-        try {
-            $pdo = new PDO("mysql:host=localhost;dbname=".$sqldatabase, $sqluser, $sqlpassword);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            exit($e->getMessage());
-        }
         $st = $pdo->prepare('SELECT * FROM list WHERE user_name=?');
         $st->execute(array($_SESSION['uname']));
         $r = $st->fetch();
@@ -47,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         padding: 0px;
         font-family: sans-serif;
         font-size: .9em;
-        background-image: url("img/mike-kenneally-TD4DBagg2wE-unsplash.jpg");
+        background-image: url("../img/mike-kenneally-TD4DBagg2wE-unsplash.jpg");
     }
     div {
         top: 50%;

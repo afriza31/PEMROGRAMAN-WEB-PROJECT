@@ -1,49 +1,37 @@
 <?php
+session_start();
 
-    session_start();
+if (isset($_SESSION['login'])) {
+    header("Location: index.php");
+    exit();
+}
 
-    if (isset($_SESSION['uname'])) {
-        header("Location: index.php");
-        exit();
-    }
+// Include file konfigurasi
+include 'confiq.php';
 
-    $sqluser = "root";
-    $sqlpassword = "";
-    $sqldatabase = "login";
-    
-    $post = $_SERVER['REQUEST_METHOD'] == 'POST';
-    if ($post) {
-        if (empty($_POST['uname']) || empty($_POST['pass'])) {
-            $empty_fields = true;
+$post = $_SERVER['REQUEST_METHOD'] == 'POST';
+if ($post) {
+    if (empty($_POST['uname']) || empty($_POST['pass'])) {
+        $empty_fields = true;
+    } else {
+        $st = $pdo->prepare('SELECT * FROM list WHERE user_name=?');
+        $st->execute(array($_POST['uname']));
+        $r = $st->fetch();
+        if ($r != null && password_verify($_POST['pass'], $r["password"])) {
+            $_SESSION["login"] = true;
+            $_SESSION["uname"] = $_POST["uname"];
+            $_SESSION["fname"] = $r["first_name"];
+            
+            header("Location: index.php");
+            exit();
         } else {
-            try {
-                $pdo = new PDO("mysql:host=localhost;dbname=" . $sqldatabase, $sqluser, $sqlpassword);
-                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            } catch (PDOException $e) {
-                exit($e->getMessage());
-            }
-            $st = $pdo->prepare('SELECT * FROM list WHERE user_name=?');
-            $st->execute(array($_POST['uname']));
-            $r = $st->fetch();
-            if ($r != null && password_verify($_POST['pass'], $r["password"])) {
-                $_SESSION["uname"] = $_POST["uname"];
-                $_SESSION["fname"] = $r["first_name"];
-                
-                if (!empty($_POST["remember"])) {
-                    setcookie("uname", $_POST["uname"], time() + (10 * 365 * 24 * 60 * 60));
-                    setcookie("pass", $_POST["pass"], time() + (10 * 365 * 24 * 60 * 60));
-                } else {
-                    setcookie("uname", "");
-                    setcookie("pass", "");
-                }
-                header("Location: index.php");
-                exit();
-            } else {
-                $login_err = true;
-            }
+            $login_err = true;
         }
     }
-    ?>
+}
+?>
+
+
 
 <!DOCTYPE HTML>
 <html>
@@ -54,7 +42,7 @@
         padding:0px;
         font-family: sans-serif;
         font-size:.9em;
-        background-image: url("img/mike-kenneally-TD4DBagg2wE-unsplash.jpg");
+        background-image: url("../img/mike-kenneally-TD4DBagg2wE-unsplash.jpg");
         /* filter: blur(30px); */
         
         
@@ -68,7 +56,7 @@
         -webkit-transform: translate(-50%,-50%);
         position:absolute;
         width:600px;
-        height: 400px;
+        height: 390px;
         color: white;
         /* background:#eee; */
         padding:10px 20px;
@@ -142,9 +130,7 @@
     <br>
     <input type="submit" id="submit" value="Login"><br><br>
     
-    <input type="checkbox" name="remember" <?php if (isset($_COOKIE["uname"])) { ?> checked <?php } ?> id="remember"> 
-    Remember me
-    <br><br>
+    
     
     Don't have a account? <a href="signup.php">SignUp</a>.<br><br>
 </form>
