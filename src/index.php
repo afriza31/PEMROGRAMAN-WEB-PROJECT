@@ -466,33 +466,52 @@ if (!isset($_SESSION['login'])) {
       // const message = formatMessage(objData);
       // window.open('http://wa.me/6281247641748?text=' + encodeURIComponent(message), '_blank');
 
-      
+
       //Mitrans Snap Pop Up
 
       //minta transaction token menggunakan ajax atau fetch
       try {
         const response = await fetch('placeOrder.php', {
-          method: 'POST',
-          body: data,
+            method: 'POST',
+            body: data,
         });
         const token = await response.text();
-        // console.log(token);
-        window.snap.pay(token);
+        console.log(token);
 
-      } catch (err) {
+        window.snap.pay(token, {
+            onSuccess: function(result) {
+                /* Implementasi redirect setelah pembayaran sukses */
+                alert("payment success!"); 
+                console.log(result);
+                window.location.href = "index.php";  // Arahkan ke index.php setelah pembayaran sukses
+            },
+            onPending: function(result) {
+                alert("waiting for your payment!");
+                console.log(result);
+            },
+            onError: function(result) {
+                alert("payment failed!");
+                console.log(result);
+            },
+            onClose: function() {
+                alert('you closed the popup without finishing the payment');
+            }
+        });
+
+    } catch (err) {
         console.log(err.message);
-      }
+    }
 
 
     });
 
-
+    
     //format pesan whatsapp
     const formatMessage = (obj) => {
       return `Data Customer
-Nama: ${obj.name}
-Email: ${obj.email}
-No HP: ${obj.phone}
+        Nama: ${obj.name}
+        Email: ${obj.email}
+        No HP: ${obj.phone}
 
 Data Pesanan
 ${JSON.parse(obj.items).map(item =>
