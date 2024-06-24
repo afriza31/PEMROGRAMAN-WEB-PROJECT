@@ -258,6 +258,13 @@ body {
     cursor: pointer;
  }
 
+ .form-container .checkout-button.disabled {
+
+    background-color: #999;
+    cursor: not-allowed;
+
+ }
+
  /* sidebar settings */
 
 
@@ -756,4 +763,70 @@ footer .credit a {
 }
 
 
+.navbar-extra a#settings-button {
+       margin-left: 0.8rem; 
+    }
 
+
+    .settings-sidebar {
+      position: fixed;
+      top: 40px;
+      right: -300px;
+      width: 300px;
+      height: 100%;
+      background: #333;
+      color: white;
+      transition: right 0.3s;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .settings-sidebar.active {
+      right: 0;
+    }
+
+    .settings-sidebar .close-btn {
+      display: block;
+      text-align: right;
+      margin-top: 3rem;
+      
+    }
+
+    .settings-sidebar .close-btn i {
+      cursor: pointer;
+      
+    }
+
+    .settings-sidebar ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .settings-sidebar ul li {
+      margin: 20px 0;
+    }
+
+    .settings-sidebar ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 1.2em;
+    }
+
+    .settings-sidebar ul li a:hover {
+      color: #d3a27f;
+    }
+
+    .settings-sidebar button {
+      background: none; border: none; color: white; font-size: 1.2em; cursor:pointer;
+    }
+
+    .settings-sidebar button:hover{
+      color: #d3a27f;
+    }
+
+    .form-container .checkout-button.disabled {
+
+background-color: #999;
+cursor: not-allowed;
+
+}

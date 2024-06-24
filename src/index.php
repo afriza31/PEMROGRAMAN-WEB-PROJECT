@@ -5,8 +5,8 @@ session_start();
 include 'confiq.php';
 
 if (!isset($_SESSION['login'])) {
-    header("Location: login.php");
-    exit();
+  header("Location: login.php");
+  exit();
 }
 ?>
 
@@ -23,8 +23,7 @@ if (!isset($_SESSION['login'])) {
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,300;0,400;0,700;1,700&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,300;0,400;0,700;1,700&display=swap" rel="stylesheet">
 
   <!-- Feather Icons -->
   <script src="https://unpkg.com/feather-icons"></script>
@@ -35,14 +34,16 @@ if (!isset($_SESSION['login'])) {
   <!-- alpineJs -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <!-- <script src="src/app.js"></script> -->
-  <script src="../js/app.js"></script>
+  <script src="../js/app.js" async></script>
 
-  
+  <!-- Mitrans -->
+  <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-0K2pmwXVRKflG_Rz"></script>
+
+
   <!-- Custom Style for Sidebar -->
   <style>
-
     .navbar-extra a#settings-button {
-       margin-left: 0.8rem; 
+      margin-left: 0.8rem;
     }
 
 
@@ -67,12 +68,12 @@ if (!isset($_SESSION['login'])) {
       display: block;
       text-align: right;
       margin-top: 3rem;
-      
+
     }
 
     .settings-sidebar .close-btn i {
       cursor: pointer;
-      
+
     }
 
     .settings-sidebar ul {
@@ -95,14 +96,23 @@ if (!isset($_SESSION['login'])) {
     }
 
     .settings-sidebar button {
-      background: none; border: none; color: white; font-size: 1.2em; cursor:pointer;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2em;
+      cursor: pointer;
     }
 
-    .settings-sidebar button:hover{
+    .settings-sidebar button:hover {
       color: #d3a27f;
     }
 
+    .form-container .checkout-button.disabled {
 
+      background-color: #999;
+      cursor: not-allowed;
+
+    }
   </style>
 </head>
 
@@ -141,47 +151,49 @@ if (!isset($_SESSION['login'])) {
     <div class="shopping-cart">
       <template x-for="(item, index) in $store.cart.items" x-keys="index">
         <div class="cart-item">
-        <img :src="`../img/products/${item.img}`" :alt="item.name">
-        <div class="item-detail">
-          <h3 x-text="item.name"></h3>
-          <div class="item-price">
-            <span x-text="rupiah(item.price)"></span> &times;
-            <button id="remove"  @click="$store.cart.remove(item.id)">&minus;</button>
-            <span x-text="item.quantity"></span>
-            <button id="add" @click="$store.cart.add(item)">&plus;</button>&equals;
-            <span x-text="rupiah(item.total)"></span>
+          <img :src="`../img/products/${item.img}`" :alt="item.name">
+          <div class="item-detail">
+            <h3 x-text="item.name"></h3>
+            <div class="item-price">
+              <span x-text="rupiah(item.price)"></span> &times;
+              <button id="remove" @click="$store.cart.remove(item.id)">&minus;</button>
+              <span x-text="item.quantity"></span>
+              <button id="add" @click="$store.cart.add(item)">&plus;</button>&equals;
+              <span x-text="rupiah(item.total)"></span>
+            </div>
           </div>
         </div>
+      </template>
+      <h4 x-show="!$store.cart.items.length" style="margin-top: 1rem;">Cart is Empty</h4>
+      <h4 x-show="$store.cart.items.length">Total : <span x-text="rupiah($store.cart.total)"></span></h4>
+
+
+      <div class="form-container" x-show="$store.cart.items.length">
+        <form action="" id="checkoutForm">
+          <input type="hidden" name="items" x-model="JSON.stringify($store.cart.items)">
+          <input type="hidden" name="total" x-model="$store.cart.total">
+
+          <h5>Customer Detail</h5>
+
+          <label for="name">
+            <span>Name</span>
+            <input type="text" name="name" id="name">
+          </label>
+
+          <label for="email">
+            <span>Email</span>
+            <input type="email" name="email" id="email">
+          </label>
+
+          <label for="phone">
+            <span>Phone</span>
+            <input type="number" name="phone" id="phone" autocomplete="off">
+          </label>
+
+          <button class="checkout-button disabled" type="submit" id="checkout-button" value="checkout">Checkout</button>
+
+        </form>
       </div>
-    </template>
-    <h4 x-show="!$store.cart.items.length" style="margin-top: 1rem;">Cart is Empty</h4>
-    <h4 x-show="$store.cart.items.length">Total : <span x-text="rupiah($store.cart.total)"></span></h4>
-
-
-    <div class="form-container" x-show="$store.cart.items.length">
-      <form action="" id="checkoutForm">
-
-        <h5>Customer Detail</h5>
-
-        <label for="name">
-          <span>Name</span>
-          <input type="text" name="name" id="name">
-        </label>
-
-        <label for="email">
-          <span>Email</span>
-          <input type="email" name="email" id="email">
-        </label>
-
-        <label for="phone">
-          <span>Phone</span>
-          <input type="number" name="phone" id="phone" autocomplete="off">
-        </label>
-
-        <button class="checkout-button" type="submit" id="checkout-button" value="checkout">Checkout</button>
-
-      </form>
-    </div>
     </div>
     <!-- Shopping Cart end -->
 
@@ -282,85 +294,45 @@ if (!isset($_SESSION['login'])) {
 
     <div class="row">
       <template x-for="(item, index) in items" x-key="index">
-      <div class="product-card">
-        <div class="product-icons">
-        <a href="#" @click.prevent="$store.cart.add(item)">
-                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <use href="../img/feather-sprite.svg#shopping-cart" />
-                            </svg>
-                        </a>
-                        <a href="#" class="item-detail-button">
-                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <use href="../img/feather-sprite.svg#eye" />
-                            </svg>
-                        </a>
-        </div>
-        <div class="product-image">
-          <img :src="`../img/products/${item.img}`" :alt="item.name">
-        </div>
-        <div class="product-content">
-          <h3 x-text="item.name"></h3>
-          <div class="product-stars">
-            <svg
-            width="24"
-            height="24"
-            fill="currentColor"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <use href="../img/feather-sprite.svg#star" />
-          </svg>
-          <svg
-            width="24"
-            height="24"
-            fill="currentColor"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <use href="../img/feather-sprite.svg#star" />
-          </svg>
-          <svg
-            width="24"
-            height="24"
-            fill="currentColor"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <use href="../img/feather-sprite.svg#star" />
-          </svg>
-          <svg
-            width="24"
-            height="24"
-            fill="currentColor"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <use href="../img/feather-sprite.svg#star" />
-          </svg>
-          <svg
-            width="24"
-            height="24"
-            fill="currentColor"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <use href="../img/feather-sprite.svg#star" />
-          </svg>
+        <div class="product-card">
+          <div class="product-icons">
+            <a href="#" @click.prevent="$store.cart.add(item)">
+              <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <use href="../img/feather-sprite.svg#shopping-cart" />
+              </svg>
+            </a>
+            <a href="#" class="item-detail-button">
+              <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <use href="../img/feather-sprite.svg#eye" />
+              </svg>
+            </a>
           </div>
-          <div class="product-price"><span x-text="rupiah(item.price)"></span></div>
-        </div>
+          <div class="product-image">
+            <img :src="`../img/products/${item.img}`" :alt="item.name">
+          </div>
+          <div class="product-content">
+            <h3 x-text="item.name"></h3>
+            <div class="product-stars">
+              <svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <use href="../img/feather-sprite.svg#star" />
+              </svg>
+              <svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <use href="../img/feather-sprite.svg#star" />
+              </svg>
+              <svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <use href="../img/feather-sprite.svg#star" />
+              </svg>
+              <svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <use href="../img/feather-sprite.svg#star" />
+              </svg>
+              <svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <use href="../img/feather-sprite.svg#star" />
+              </svg>
+            </div>
+            <div class="product-price"><span x-text="rupiah(item.price)"></span></div>
+          </div>
       </template>
-      </div>
+    </div>
     </div>
   </section>
   <!-- Products Section end -->
@@ -372,9 +344,7 @@ if (!isset($_SESSION['login'])) {
     </p>
 
     <div class="row">
-      <iframe
-        src="https://maps.google.com/maps?q=Yogyakarta&t=&z=13&ie=UTF8&iwloc=&output=embed"
-        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="map"></iframe>
+      <iframe src="https://maps.google.com/maps?q=Yogyakarta&t=&z=13&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="map"></iframe>
 
       <form action="">
         <div class="input-group">
@@ -445,21 +415,93 @@ if (!isset($_SESSION['login'])) {
 
     // Sidebar control
     document.getElementById('settings-button').addEventListener('click', function() {
-        document.getElementById('settings-sidebar').classList.toggle('active');
+      document.getElementById('settings-sidebar').classList.toggle('active');
     });
 
     document.querySelector('.close-btn').addEventListener('click', function() {
-        document.getElementById('settings-sidebar').classList.remove('active');
+      document.getElementById('settings-sidebar').classList.remove('active');
     });
     document.addEventListener('click', function(event) {
-        var isClickInside = document.getElementById('settings-sidebar').contains(event.target) || 
-                            document.getElementById('settings-button').contains(event.target);
+      var isClickInside = document.getElementById('settings-sidebar').contains(event.target) ||
+        document.getElementById('settings-button').contains(event.target);
 
-        if (!isClickInside) {
-            document.getElementById('settings-sidebar').classList.remove('active');
-        }
+      if (!isClickInside) {
+        document.getElementById('settings-sidebar').classList.remove('active');
+      }
     });
 
+
+    //alpine js
+
+    //form validation
+
+    const checkoutButton = document.querySelector('.checkout-button');
+    checkoutButton.disabled = true;
+
+    const form = document.querySelector('#checkoutForm');
+
+    form.addEventListener('keyup', function() {
+      for (let i = 0; i < form.elements.length; i++) {
+
+        if (form.elements[i].value.length !== 0) {
+          checkoutButton.classList.remove('disabled');
+          checkoutButton.classList.add('disabled');
+        } else {
+          return false;
+        }
+      }
+      checkoutButton.disabled = false;
+      checkoutButton.classList.remove('disabled');
+    });
+
+    // kirim data ketika tombol checkout di klik
+    checkoutButton.addEventListener('click', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = new URLSearchParams(formData);
+      const objData = Object.fromEntries(data);
+      console.log(objData);
+
+      // message whatsapp
+      // const message = formatMessage(objData);
+      // window.open('http://wa.me/6281247641748?text=' + encodeURIComponent(message), '_blank');
+
+      
+      //Mitrans Snap Pop Up
+
+      //minta transaction token menggunakan ajax atau fetch
+      try {
+        const response = await fetch('placeOrder.php', {
+          method: 'POST',
+          body: data,
+        });
+        const token = await response.text();
+        // console.log(token);
+        window.snap.pay(token);
+
+      } catch (err) {
+        console.log(err.message);
+      }
+
+
+    });
+
+
+    //format pesan whatsapp
+    const formatMessage = (obj) => {
+      return `Data Customer
+Nama: ${obj.name}
+Email: ${obj.email}
+No HP: ${obj.phone}
+
+Data Pesanan
+${JSON.parse(obj.items).map(item =>
+  `${item.name} (${item.quantity} x ${rupiah(item.total)})`
+).join('\n')}
+
+TOTAL: ${rupiah(obj.total)}
+Terima kasih.`;
+    };
   </script>
 
   <!-- My Javascript -->

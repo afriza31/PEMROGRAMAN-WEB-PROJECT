@@ -105,7 +105,7 @@ if ($post) {
     }
     a {
         text-decoration: none;
-        color:blue;
+        color:#d3a27f;
         font-weight: bold;
     }
 </style>
@@ -117,7 +117,8 @@ if ($post) {
     <p>SignUp</p>
     Username<br>
     <input type="text" name="uname" placeholder="Username"><br>
-    <span id="uname-error"></span><br>
+    <span id="uname-error"></span> <?php if (!empty($uname_err) && $uname_err) echo '<span>Username taken. Try another username.</span>';?><br>
+
     
     Name<br>
     <input type="text" name="fname" placeholder="First Name"><br>
@@ -127,7 +128,7 @@ if ($post) {
     
     E-mail<br>
     <input type="text" name="email" placeholder="email@example.com"><br>
-    <span id="email-error"></span><br>
+    <span id="email-error"></span> <?php if(!empty($email_err)&&$email_err) echo '<span>Email already registered. Enter another email.</span>';?><br>
     
     Password<br>
     <input type="password" name="pass" placeholder="Password"><br>
